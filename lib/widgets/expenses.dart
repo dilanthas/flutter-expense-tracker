@@ -1,3 +1,4 @@
+import 'package:expense_tracker/widgets/chart/chart.dart';
 import 'package:expense_tracker/widgets/expense_list/expenses_list.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/widgets/new_expense.dart';
@@ -49,7 +50,7 @@ class _ExpensesState extends State<Expenses> {
     setState(() {
       _registeredExpenses.remove(expense);
     });
-     ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         action: SnackBarAction(
           label: 'Undo',
@@ -81,10 +82,29 @@ class _ExpensesState extends State<Expenses> {
       ),
       body: Column(
         children: [
-          const Text('The chart'),
+          Chart(expenses: _registeredExpenses),
           Expanded(child: mainContent),
         ],
       ),
     );
+  }
+}
+
+class ExpenseBucket {
+  const ExpenseBucket({required this.category, required this.expenses});
+  final Category category;
+  final List<Expense> expenses;
+
+  ExpenseBucket.forCategory(List<Expense> allExpense, this.category)
+      : expenses = allExpense
+            .where((element) => element.category == category)
+            .toList();
+
+  double get totalExpenses {
+    double sum = 0;
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+    return sum;
   }
 }
